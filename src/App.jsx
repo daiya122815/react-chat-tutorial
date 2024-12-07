@@ -19,7 +19,9 @@ export default function App() {
             <h1>チャット</h1>
 
             {messages.map((msg, index) => (
-                <div key={index}>{msg}</div>
+                <div key={index}>
+                    {msg}
+                </div>
             ))}
 
             <input
@@ -29,7 +31,9 @@ export default function App() {
                 placeholder="メッセージを入力"
             />
 
-            <button onClick={handleSendMessage}>送信</button>
+            <button onClick={handleSendMessage}>
+                送信
+            </button>
         </div>
     );
 }
