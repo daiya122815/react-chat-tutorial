@@ -1,1 +1,1 @@
-import * as bootstrap from './___netlify-bootstrap.mjs';import * as func from './netlify/functions/serverless.mjs';const funcModule = typeof func.default === "function" ? func : func.default;export const handler = bootstrap.getLambdaHandler(funcModule)
+import * as bootstrap from './___netlify-bootstrap.mjs';import * as func from './serverless.mjs';const funcModule = typeof func.default === "function" ? func : func.default;export const handler = bootstrap.getLambdaHandler(funcModule)
