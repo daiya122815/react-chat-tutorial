@@ -19,8 +19,10 @@ export default function App() {
                 timestamp: new Date(),
             });
             console.log("メッセージの追加に成功しました: ", docRef.id);
+            
             setMsg("");
             fetchMessages();
+            
         } catch (e) {
             console.error("メッセージの追加に失敗しました: ", e);
         }
