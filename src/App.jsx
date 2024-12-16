@@ -63,6 +63,7 @@ export default function App() {
         }
     }
 
+    // GoogleSignIn
     const auth = getAuth();
 const handleSignIn = () => {
     signInWithPopup(auth, provider)
