@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
+
+import { db, provider } from "./firebase";
 import { collection, addDoc, getDocs } from "firebase/firestore";
-import { db } from "./firebase";
+
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
 export default function App() {
 
+    // console.log(auth, provider)
     const [msg, setMsg] = useState("");
     const [messages, setMessages] = useState([]);
 
@@ -19,15 +23,15 @@ export default function App() {
 
         try {
             // メッセージの翻訳
-            // const translatemsg = await translateMessage(msg);
+            // const translatedmsg = await translateMessage(msg);
             
             // 元と翻訳後のメッセージをfirestoreに格納
             const docRef = await addDoc(collection(db, "chats"), {
                 original: msg,
-                translated: translatemsg,
+                // translated: translatedmsg,
                 timestamp: new Date(),
             });
-            // console.log("メッセージの追加に成功しました: ", docRef.id);
+            console.log("メッセージの追加に成功しました: ", docRef.id, docRef.msg, docRef.timestamp);
 
             // 初期化
             setMsg("");
@@ -59,6 +63,29 @@ export default function App() {
         }
     }
 
+    const auth = getAuth();
+const handleSignIn = () => {
+    signInWithPopup(auth, provider)
+  .then((result) => {
+    // This gives you a Google Access Token. You can use it to access the Google API.
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const token = credential.accessToken;
+    // The signed-in user info.
+    const user = result.user;
+    // IdP data available using getAdditionalUserInfo(result)
+    // ...
+  }).catch((error) => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    const email = error.customData.email;
+    // The AuthCredential type that was used.
+    const credential = GoogleAuthProvider.credentialFromError(error);
+    // ...
+  });
+};
+
     useEffect(() => {
         fetchMessages();
     }, []);
@@ -66,6 +93,10 @@ export default function App() {
     return (
         <div>
             <h1>チャット</h1>
+
+            <button onClick={handleSignIn}>
+                Google
+            </button>
 
             <form onSubmit={sendMessage}>
                 <input
