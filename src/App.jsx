@@ -5,6 +5,11 @@ import { collection, addDoc, getDocs } from "firebase/firestore";
 
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+
 export default function App() {
 
     // console.log(auth, provider)
@@ -63,10 +68,7 @@ export default function App() {
         }
     }
 
-<<<<<<< HEAD
     // GoogleSignIn
-=======
->>>>>>> 17363317cb1e78d720a3e1e7418f9fed55fad590
     const auth = getAuth();
 const handleSignIn = () => {
     signInWithPopup(auth, provider)
@@ -101,6 +103,18 @@ const handleSignIn = () => {
             <button onClick={handleSignIn}>
                 Google
             </button>
+
+            <a rel="preconnect" href="https://fonts.googleapis.com">a</a>
+            
+            <a rel="preconnect" href="https://fonts.gstatic.com" crossorigin>a</a>
+            
+            <a
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+            >
+                a
+            </a>
+
 
             <form onSubmit={sendMessage}>
                 <input
