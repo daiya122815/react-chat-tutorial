@@ -1,13 +1,18 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 
 import { db, provider } from "./firebase";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
+// import { useAuthState } from "react-firebase-hooks/auth";
+// import { auth } from "./firebase";
+// const [user, loading, error] = useAuthState(auth);
+
+// UI
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
-import TextField from "@mui/material";
+import TextField from "@mui/material/TextField";
 
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
@@ -19,8 +24,7 @@ export default function App() {
     // console.log(auth, provider)
     const [msg, setMsg] = useState("");
     const [messages, setMessages] = useState([]);
-
-    // メッセージの送信
+    const [login ,setLogin]=useState(false)    // メッセージの送信
     const sendMessage = async (e) => {
 
         e.preventDefault();
@@ -38,7 +42,8 @@ export default function App() {
             const docRef = await addDoc(collection(db, "chats"), {
                 original: msg,
                 // translated: translatedmsg,
-                timestamp: new Date(),
+                uid: user.uid,
+                timestamp: new Date()
             });
             console.log("メッセージの追加に成功しました: ", docRef.id, docRef.msg, docRef.timestamp);
 
@@ -62,7 +67,8 @@ export default function App() {
             const fetchMessages = [];
             querySnapshot.forEach((doc) => {
                 const msg = doc.data();
-                fetchMessages.push(msg.original, msg.translated);
+                // fetchMessages.push(msg.original, msg.translated, msg.timestamp);
+                fetchMessages.push(msg.original, msg.id);
                 // console.log(`${doc.id} => ${doc.data()}`);
             });
             setMessages(fetchMessages);
@@ -82,6 +88,7 @@ export default function App() {
                 const token = credential.accessToken;
                 // The signed-in user info.
                 const user = result.user;
+                setLogin(true)
                 // IdP data available using getAdditionalUserInfo(result)
                 // ...
             }).catch((error) => {
@@ -95,6 +102,12 @@ export default function App() {
                 // ...
             });
     };
+    
+    /*
+    if (localStorage.getItem()) {
+        return true;
+    }
+    */
 
     useEffect(() => {
         fetchMessages();
@@ -158,6 +171,7 @@ export default function App() {
 
             {messages.map((msg, index) => (
                 <div key={index}>
+                    {index}
                     {msg}
                 </div>
             ))}
