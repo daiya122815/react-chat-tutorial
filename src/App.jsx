@@ -162,7 +162,7 @@ export default function App() {
 
     useEffect(() => {
         fetchMessages();
-    }, [messages]);
+    }, [messages, user]);
     return (
         <div>
 
