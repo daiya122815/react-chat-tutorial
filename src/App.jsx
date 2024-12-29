@@ -107,7 +107,8 @@ export default function App() {
                 timestamp: new Date(),
                 original: msg,
                 translated: translatemsg,
-                id: userEmail,
+                id: user.uid,
+                email: userEmail,
             });
             console.log("メッセージ追加成功:", docRef.id);
 
@@ -189,7 +190,8 @@ export default function App() {
                     original: msg.original,
                     translated: msg.translated,
                     // timestamp: msg.timestamp,
-                    id: userEmail,
+                    id: user.uid,
+                    email: userEmail,
                 });
                 // fetchMessages.push(msg.original, msg.id);
                 // console.log(`${doc.id} => ${doc.data()}`);
@@ -335,7 +337,7 @@ export default function App() {
                         <Box key={index} mb={2}>
 
                             <Typography variant="caption" color="text.secondary">
-                                {msg.timestamp} | {msg.id}
+                                {msg.timestamp} | {msg.email}
                             </Typography>
 
                             <Typography variant="body1" fontWeight="bold">
