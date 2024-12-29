@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 
 // データベース（firestore）
-import { db, provider } from "./firebase";
+import { db } from "./firebase";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 
-// oauth認証
+// auth認証
+import { provider } from "./firebase";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
 // ログイン状態の管理
@@ -12,7 +13,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 // import { auth } from "./firebase";
 // const [user, loading, error] = useAuthState(auth);
 
-// UI
+// UI関連
 import {
     TextField,
     Button,
@@ -20,64 +21,30 @@ import {
     Typography,
     Paper,
     Box,
-    Divider,
-    AppBar,
-    Toolbar,
-    IconButton,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
 import "./App.css";
 
 export default function App() {
 
-    // firestoreに送信するメッセージと、firestoreに保存されたメッセージを受け取る配列
+    // 入力されたメッセージと、firestoreに保存されたメッセージを管理する変数
     const [msg, setMsg] = useState("");
     const [messages, setMessages] = useState([]);
 
-    // メッセージの送信
-    // const sendMessage = async (e) => {
-
-    //     e.preventDefault();
-
-    //     // メッセージから空なら、送信しない
-    //     if (!msg.trim()) {
-    //         return;
-    //     }
-
-    //     try {
-    //         // const a = await connectfunctions(msg);
-    //         // console.log(a);
-    //         // メッセージの翻訳
-    //         const translatemsg = await translateMessage(msg);
-
-    //         // 元のメッセージと翻訳後のメッセージをfirestoreに格納
-    //         const docRef = await addDoc(collection(db, "chats"), {
-    //             timestamp: new Date(),
-    //             original: msg,
-    //             translated: translatemsg,
-    //             // uid: user.uid,
-    //             id: userEmail,
-    //         });
-    //         console.log("メッセージの追加に成功しました: ", docRef.id); //, docRef.msg, docRef.timestamp);
-
-    //         // 初期化
-    //         setMsg("");
-    //         fetchMessages();
-
-    //     } catch (e) {
-    //         console.error("メッセージの追加に失敗しました: ", e);
-    //     }
-    // };
-
+    // メッセージの送信とfirestoreに追加
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // メッセージが空ならreturn
-        if (!msg.trim()) return;
+        if (!msg.trim()) {
+            return;
+        }
 
         try {
-            // 2. ここに「sendMessage」の本体と同じ処理を記述
-            //    (translateMessage, firestoreへの書き込みなど)
+
+            const user = auth.currentUser;
+            if (!user) {
+                console.error("ログインされていません。");
+                return;
+            }
 
             // 入力されたmsgをJSON文字列にして、POSTメソッドを使用して、functionsに送る。
             const sendMsg = {
@@ -93,26 +60,22 @@ export default function App() {
                 body: JSON.stringify(sendMsg),
             });
 
-            // const translatemsg = await translateMessage(msg);
-            
-            // 必要であれば、このタイミングで
-            // Netlify Functions への fetch も実行してOK
-            // const response = await fetch("/.netlify/functions/serverless");
+            // 受け取り（JSONで返ってくる）
             const json = await response.json();
-            console.log("Functions のレスポンス:", json);
-            // const json = JSON.parse(stringjson);
+            console.log("functionsからのレスポンス:", json);
             const translatemsg = json.message;
-            
+
+            // firestoreに情報を追加
             const docRef = await addDoc(collection(db, "chats"), {
                 timestamp: new Date(),
                 original: msg,
                 translated: translatemsg,
                 id: user.uid,
-                email: userEmail,
+                email: user.email,
             });
             console.log("メッセージ追加成功:", docRef.id);
 
-            // 3. 入力欄をクリア & メッセージ一覧再取得など
+            // 入力欄をクリアし、追加されたメッセージを取得
             setMsg("");
             fetchMessages();
 
@@ -120,59 +83,6 @@ export default function App() {
             console.error("メッセージの追加に失敗:", error);
         }
     };
-
-    // const connectfunctions = async (msg) => {
-
-    //     // 入力されたmsgをJSON文字列にして、POSTメソッドを使用して、functionsに送る。
-    //     const sendMsg = {
-    //         message: "hello",
-    //     };
-    //     // const sendMessage = JSON.stringify({message: msg});
-
-    //     // HTTPのPOSTメソッドでサーバーサイドに送る
-    //     const response = await fetch("/.netlify/functions/serverless", {
-    //         method: "POST",
-    //         headers: {
-    //             "Content-Type": "application/json"
-    //         },
-    //         body: JSON.stringify(sendMsg),
-    //     });
-
-    //     // const response2 = await fetch("/.netlify/functions/serverless");
-    //     const data = await response.json();
-
-    //     console.log(data);
-    // }
-
-    // const text = "hello";
-    // const { messages } = require("../../src/App");
-
-    const DEEPL_API_KEY = import.meta.env.VITE_DEEPL_API_KEY;
-    const translateMessage = async (text) => {
-        try {
-            const response = await fetch("https://api-free.deepl.com/v2/translate", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: new URLSearchParams({
-                    auth_key: DEEPL_API_KEY,
-                    text: text,
-                    target_lang: "JA",
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error("翻訳に失敗しました");
-            }
-
-            const data = await response.json();
-            return data.translations[0].text;
-        } catch (error) {
-            console.error("翻訳エラー", error);
-            return text;
-        }
-    }
 
     // メッセージの受信
     const fetchMessages = async () => {
@@ -189,12 +99,8 @@ export default function App() {
                     timestamp: msg.timestamp?.toDate()?.toISOString() || "", // Firestore Timestampを変換
                     original: msg.original,
                     translated: msg.translated,
-                    // timestamp: msg.timestamp,
-                    id: user.uid,
-                    email: userEmail,
+                    email: msg.email || "Unknown",
                 });
-                // fetchMessages.push(msg.original, msg.id);
-                // console.log(`${doc.id} => ${doc.data()}`);
             });
             setMessages(fetchMessages);
 
@@ -205,58 +111,70 @@ export default function App() {
 
     // GoogleSignIn
     const auth = getAuth();
-    const handleSignIn = () => {
-        signInWithPopup(auth, provider)
-            .then((result) => {
-                // This gives you a Google Access Token. You can use it to access the Google API.
-                const credential = GoogleAuthProvider.credentialFromResult(result);
-                const token = credential.accessToken;
-                // The signed-in user info.
-                const user = result.user;
-                setLogin(true)
-                // IdP data available using getAdditionalUserInfo(result)
-                // ...
-            }).catch((error) => {
-                // Handle Errors here.
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                // The email of the user's account used.
-                const email = error.customData.email;
-                // The AuthCredential type that was used.
-                const credential = GoogleAuthProvider.credentialFromError(error);
-                // ...
-            });
-    };
-    // const [user] = useAuthState(auth);
-    const currentUser = auth.currentUser;
-    let userEmail = "";
-    if (currentUser) {
-        userEmail = currentUser.email;
-    }
+    // const handleSignIn = () => {
+    //     signInWithPopup(auth, provider)
+    //         .then((result) => {
+    //             // This gives you a Google Access Token. You can use it to access the Google API.
+    //             const credential = GoogleAuthProvider.credentialFromResult(result);
+    //             const token = credential.accessToken;
+    //             // The signed-in user info.
+    //             const user = result.user;
+    //             setLogin(true)
+    //             // IdP data available using getAdditionalUserInfo(result)
+    //             // ...
+    //         }).catch((error) => {
+    //             // Handle Errors here.
+    //             const errorCode = error.code;
+    //             const errorMessage = error.message;
+    //             // The email of the user's account used.
+    //             const email = error.customData.email;
+    //             // The AuthCredential type that was used.
+    //             const credential = GoogleAuthProvider.credentialFromError(error);
+    //             // ...
+    //         });
+    // };
 
-    const handleLogout = async () => {
+    // // const [user] = useAuthState(auth);
+    // // const currentUser = auth.currentUser;
+    // // const [email, setEmail] = useState("");
+    // // if (currentUser) {
+    // //     setEmail(currentUser.email);
+    // // }
+
+    // const handleLogout = async () => {
+    //     try {
+    //         await auth.signOut();
+    //     } catch (error) {
+    //         console.error("ログアウトエラー:", error);
+    //     }
+    // };
+
+    const [user, setUser] = useState(null);
+    const handleSignIn = async () => {
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const loggedInUser = result.user;
+            setUser(loggedInUser);
+            console.log("ログインしました。", loggedInUser);
+        } catch (eroor) {
+            console.error("ログインに失敗しました。", eroor);
+        }
+    }
+    const handleSignOut = async () => {
         try {
             await auth.signOut();
+            setUser(null);
+            console.log("ログアウトしました。")
         } catch (error) {
-            console.error("ログアウトエラー:", error);
+            console.log("ログアウトに失敗しました。", error);
         }
-    };
-
-    /*
-    if (localStorage.getItem()) {
-        return true;
     }
-    */
+
 
     useEffect(() => {
-        // (async () => {
-        //     const response = await fetch("/.netlify/functions/serverless");
-        //     const data = await response.json();
-        //     console.log(data);
-        // })
         fetchMessages();
     }, []);
-
+    
     return (
         <div>
 
@@ -276,11 +194,6 @@ export default function App() {
                                 <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
                                 <path fill="none" d="M0 0h48v48H0z"></path>
                             </svg>
-                            {/* <img
-                                className="gsi-material-button-icon"
-                                src="/images/web_light_rd_SI.svg"
-                                alt="Google Logo"
-                            /> */}
                         </div>
                         <span className="gsi-material-button-contents">Sign in with Google</span>
                         <span style={{ display: "none" }}>Sign in with Google</span>
@@ -292,18 +205,11 @@ export default function App() {
                         ログアウト
                     </Button>
                 </Box> */}
-                <Button onClick={handleLogout}>ログアウト</Button>
+                <Button onClick={handleSignOut}>ログアウト</Button>
 
                 <Box
                     component="form"
                     onSubmit={handleSubmit}
-                    // async (event) => {
-                    // event.preventDefault();
-                    // sendMessage();
-                    // const response = await fetch("/.netlify/functions/serverless");
-                    // const data = await response.json();
-                    // console.log(data);
-                    // }
                     display="flex"
                     gap={2}
                     my={2}>
