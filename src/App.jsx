@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 // データベース（firestore）
 import { db } from "./firebase";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, getDocs, query } from "firebase/firestore";
 
 // auth認証
 import { provider } from "./firebase";
@@ -87,8 +87,9 @@ export default function App() {
     const fetchMessages = async () => {
         try {
 
-            // メッセージを取得
-            const querySnapshot = await getDocs(collection(db, "chats"), orderBy("timestamp", "desc"));
+            // 時系列に並び替え、メッセージを取得
+            const q = query(collection(db, "chats"), orderBy("timestamp", "desc"));
+            const querySnapshot = await getDocs(q);
 
             // 取得したメッセージを配列に格納し、それをまた格納
             const fetchMessages = [];
