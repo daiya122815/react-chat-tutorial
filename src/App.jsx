@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 // データベース（firestore）
 import { db } from "./firebase";
-import { collection, addDoc, getDocs, query } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, orderBy } from "firebase/firestore";
 
 // auth認証
 import { provider } from "./firebase";
