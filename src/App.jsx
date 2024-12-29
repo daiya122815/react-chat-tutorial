@@ -153,6 +153,8 @@ export default function App() {
         try {
             await auth.signOut();
             setUser(null);
+            // 取得したメッセージを削除
+            messages.splice(0);
             console.log("ログアウトしました。")
         } catch (error) {
             console.log("ログアウトに失敗しました。", error);
@@ -163,6 +165,7 @@ export default function App() {
     useEffect(() => {
         fetchMessages();
     }, [messages, user]);
+    
     return (
         <div>
 
