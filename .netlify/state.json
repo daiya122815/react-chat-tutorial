@@ -1,20 +1,18 @@
 {
 	"geolocation": {
 		"data": {
-			"city": "Matsuyama",
 			"country": {
 				"code": "JP",
 				"name": "Japan"
 			},
 			"subdivision": {
-				"code": "13",
-				"name": "Tokyo"
+				"code": "08",
+				"name": "Ibaraki"
 			},
 			"timezone": "Asia/Tokyo",
-			"latitude": 35.6682,
-			"longitude": 139.6647,
-			"postalCode": "156-0041"
+			"latitude": 36.105,
+			"longitude": 140.0871
 		},
-		"timestamp": 1734306945770
+		"timestamp": 1735461211657
 	}
 }
