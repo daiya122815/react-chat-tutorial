@@ -5,10 +5,14 @@
 				"code": "JP",
 				"name": "Japan"
 			},
+			"subdivision": {
+				"code": "08",
+				"name": "Ibaraki"
+			},
 			"timezone": "Asia/Tokyo",
-			"latitude": 35.6897,
-			"longitude": 139.6895
+			"latitude": 36.105,
+			"longitude": 140.0871
 		},
-		"timestamp": 1733639300267
+		"timestamp": 1735461211657
 	}
 }
