@@ -29,8 +29,11 @@ export default function App() {
     const [msg, setMsg] = useState("");
     const [messages, setMessages] = useState([]);
 
+    const [user, setUser] = useState(null);
+
     // メッセージの送信とfirestoreに追加
     const handleSubmit = async (e) => {
+
         e.preventDefault();
 
         if (!msg.trim()) {
@@ -41,7 +44,7 @@ export default function App() {
 
             const user = auth.currentUser;
             if (!user) {
-                console.error("ログインされていません。");
+                alert("メッセージを送信するにはログインが必要です。");
                 return;
             }
 
@@ -149,7 +152,6 @@ export default function App() {
     //     }
     // };
 
-    const [user, setUser] = useState(null);
     const handleSignIn = async () => {
         try {
             const result = await signInWithPopup(auth, provider);
@@ -173,8 +175,8 @@ export default function App() {
 
     useEffect(() => {
         fetchMessages();
-    }, []);
-    
+    }, [messages]);
+
     return (
         <div>
 
