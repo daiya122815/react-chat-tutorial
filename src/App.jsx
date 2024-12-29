@@ -69,9 +69,9 @@ export default function App() {
             const docRef = await addDoc(collection(db, "chats"), {
                 timestamp: new Date(),
                 original: msg,
-                translated: translatemsg,
+                translated: translatemsg || "翻訳ができませんでした。",
                 id: user.uid,
-                email: user.email,
+                email: user.email || "Unknown",
             });
             console.log("メッセージ追加成功:", docRef.id);
 
@@ -99,7 +99,7 @@ export default function App() {
                     timestamp: msg.timestamp?.toDate()?.toISOString() || "", // Firestore Timestampを変換
                     original: msg.original,
                     translated: msg.translated,
-                    email: msg.email || "Unknown",
+                    email: msg.email,
                 });
             });
             setMessages(fetchMessages);
