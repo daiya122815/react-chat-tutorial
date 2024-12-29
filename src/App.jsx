@@ -200,11 +200,6 @@ export default function App() {
                     </div>
                 </button>
 
-                {/* <Box display="flex" gap={2} my={2}>
-                    <Button onClick={handleLogout} variant="outlined" color="error">
-                        ログアウト
-                    </Button>
-                </Box> */}
                 <Button onClick={handleSignOut}>ログアウト</Button>
 
                 <Box
@@ -226,13 +221,6 @@ export default function App() {
                         type="submit"
                         variant="contained"
                         color="primary"
-                    // onClick={async (event) => {
-                    //     event.preventDefault();
-                    //     sendMessage();
-                    //     const response = await fetch("/.netlify/functions/serverless");
-                    //     const data = await response.json();
-                    //     console.log(data);
-                    // }}
                     >
                         送信
                     </Button>
