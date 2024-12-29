@@ -10,7 +10,6 @@ import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
 // ログイン状態の管理
 import { useAuthState } from "react-firebase-hooks/auth";
-// import { auth } from "./firebase";
 // const [user, loading, error] = useAuthState(auth);
 
 // UI関連
@@ -89,14 +88,14 @@ export default function App() {
         try {
 
             // メッセージを取得
-            const querySnapshot = await getDocs(collection(db, "chats"));
+            const querySnapshot = await getDocs(collection(db, "chats"), orderBy("timestamp", "desc"));
 
             // 取得したメッセージを配列に格納し、それをまた格納
             const fetchMessages = [];
             querySnapshot.forEach((doc) => {
                 const msg = doc.data();
                 fetchMessages.push({
-                    timestamp: msg.timestamp?.toDate()?.toISOString() || "", // Firestore Timestampを変換
+                    timestamp: msg.timestamp?.toDate().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" }) || "", // Firestore Timestampを変換
                     original: msg.original,
                     translated: msg.translated,
                     email: msg.email,
